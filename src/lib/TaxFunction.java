@@ -1,7 +1,10 @@
 package lib;
 
 public class TaxFunction {
-
+	private static final int BaseNonTaxedIncome = 54000000;
+	private static final int SpouseAddition = 4500000;
+	private static final int ChildAddition = 1500000;
+	private static final int MaxChildren = 3;
 	
 	/**
 	 * Fungsi untuk menghitung jumlah pajak penghasilan pegawai yang harus dibayarkan setahun.
@@ -15,30 +18,39 @@ public class TaxFunction {
 	 */
 	
 	
-	public static int calculateTax(int monthlySalary, int otherMonthlyIncome, int numberOfMonthWorking, int deductible, boolean isMarried, int numberOfChildren) {
+	public static int calculateTax(PersonDetails personDetails) {
+		ValidateInputs(personDetails.getNumberOfChildren());
 		
-		int tax = 0;
-		
-		if (numberOfMonthWorking > 12) {
-			System.err.println("More than 12 month working per year");
-		}
-		
-		if (numberOfChildren > 3) {
-			numberOfChildren = 3;
-		}
-		
-		if (isMarried) {
-			tax = (int) Math.round(0.05 * (((monthlySalary + otherMonthlyIncome) * numberOfMonthWorking) - deductible - (54000000 + 4500000 + (numberOfChildren * 1500000))));
-		}else {
-			tax = (int) Math.round(0.05 * (((monthlySalary + otherMonthlyIncome) * numberOfMonthWorking) - deductible - 54000000));
-		}
-		
-		if (tax < 0) {
-			return 0;
-		}else {
-			return tax;
-		}
-			 
-	}
+		int nonTaxedIncome = calculateNonTaxableIncome(family.isMarried(), family.getNumberOfChildren());
+        int annualIncome = (employment.getMonthlySalary() + employment.getOtherMonthlyIncome()) * employment.getNumberOfMonthWorking();
+        int taxableIncome = annualIncome - employment.getDeductible() - nonTaxedIncome;
+
+        return computeTax(taxableIncome);
+
+		private static void validateInputs(int monthsWorked, int numberOfChildren) {
+			if (monthsWorked > 12) {
+				throw new InvalidInputException("More than 12 months working per year.");
+			}
 	
+			if (numberOfChildren > MaxChildren) {
+				throw new InvalidInputException("Number of children exceeds allowed limit.");
+			}
+		}
+	
+		private static int calculateNonTaxedIncome(boolean isMarried, int numberOfChildren) {
+			int nonTaxedIncome = BaseNonTaxedIncome;
+	
+			if (isMarried) {
+				nonTaxedIncome += SpouseAddition;
+			}
+	
+			nonTaxedIncome += Math.min(numberOfChildren, MaxChildren) * ChildAddition;
+	
+			return nonTaxedIncome;
+		}
+	
+		private static int computeTax(int taxableIncome) {
+			return taxableIncome > 0 ? (int) Math.round(taxableIncome * 0.05) : 0;
+		}
+	}
 }
