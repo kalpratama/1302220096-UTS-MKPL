@@ -52,22 +52,20 @@ public class Employee {
 	 * Jika pegawai adalah warga negara asing gaji bulanan diperbesar sebanyak 50%
 	 */
 	
+	// Memperbesar gaji pegawai asing sebesar 50%
+	public int calculateSalary(int baseSalary){
+		return isForeigner ? (int) (baseSalary * 1.5) : baseSalary;
+	}
+
+	// Menentukan gaji pegawai berdasarkan grade/tingkat kepegawaiannya
 	public void setMonthlySalary(int grade) {	
-		if (grade == 1) {
-			monthlySalary = 3000000;
-			if (isForeigner) {
-				monthlySalary = (int) (3000000 * 1.5);
-			}
-		}else if (grade == 2) {
-			monthlySalary = 5000000;
-			if (isForeigner) {
-				monthlySalary = (int) (3000000 * 1.5);
-			}
-		}else if (grade == 3) {
-			monthlySalary = 7000000;
-			if (isForeigner) {
-				monthlySalary = (int) (3000000 * 1.5);
-			}
+		switch (grade) {
+			case 1: 
+				monthlySalary = calculateSalary(3000000);
+			case 2: 
+				monthlySalary = calculateSalary(5000000);
+			case 3: 
+				monthlySalary = calculateSalary(7000000);
 		}
 	}
 	
